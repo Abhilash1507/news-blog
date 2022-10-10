@@ -1,24 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import NewsGrid from "./Components/NewsGrid";
+import SearchForm from "./Components/SearchForm";
+import { Articles_API_KEY } from "./Constants/Constants";
+import "./App.css";
 
 function App() {
+  const [value, setValue] = useState([]);
+  const [term, setTerm] = useState("everything");
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const res = await fetch(
+          `https://newsapi.org/v2/everything?q=${term}&apiKey=${Articles_API_KEY}`
+        );
+        const result = await res.json();
+        setValue(result.articles);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchArticles();
+  }, [term]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <div className="show-case">
+        <div className="overlay pt-12 p-3">
+          <h1 className="text-5xl font-bold text-white text-center mb-5 mt-5 lg:text-6x">
+            Today's
+            <br />
+            Blogs
+          </h1>
+       <p className="text-white mt-6">
+            awesome place to make oneself productive <br />
+            and entertained through daiy updates.
+          </p>
+          <SearchForm searchText={(text) => setTerm(text)} />
+        </div>
+      </div>
+
+      <NewsGrid items={value}></NewsGrid>
+    </>
   );
 }
 
